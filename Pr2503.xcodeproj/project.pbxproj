@@ -16,6 +16,8 @@
 		64108264299A6A2B00F20DAC /* BasePresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64108263299A6A2B00F20DAC /* BasePresenter.swift */; };
 		64108266299A6A5200F20DAC /* BaseModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64108265299A6A5200F20DAC /* BaseModel.swift */; };
 		64108268299A6B1500F20DAC /* SceneBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64108267299A6B1500F20DAC /* SceneBuilder.swift */; };
+		6410826B299A93AE00F20DAC /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6410826A299A93AE00F20DAC /* Constants.swift */; };
+		6410826E299A9A3900F20DAC /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6410826D299A9A3900F20DAC /* Extensions.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -30,6 +32,8 @@
 		64108263299A6A2B00F20DAC /* BasePresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BasePresenter.swift; sourceTree = "<group>"; };
 		64108265299A6A5200F20DAC /* BaseModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseModel.swift; sourceTree = "<group>"; };
 		64108267299A6B1500F20DAC /* SceneBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneBuilder.swift; sourceTree = "<group>"; };
+		6410826A299A93AE00F20DAC /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
+		6410826D299A9A3900F20DAC /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -73,6 +77,7 @@
 			children = (
 				264DFEEB260D07F00035EA15 /* Info.plist */,
 				264DFEE6260D07F00035EA15 /* Assets.xcassets */,
+				6410826A299A93AE00F20DAC /* Constants.swift */,
 				264DFEE8260D07F00035EA15 /* LaunchScreen.storyboard */,
 			);
 			path = Resources;
@@ -84,6 +89,7 @@
 				64108259299A678300F20DAC /* Application */,
 				6410825A299A678C00F20DAC /* Services */,
 				6410825B299A679900F20DAC /* Scenes */,
+				6410826C299A9A1B00F20DAC /* Extensions */,
 			);
 			path = Sources;
 			sourceTree = "<group>";
@@ -146,6 +152,14 @@
 				64108263299A6A2B00F20DAC /* BasePresenter.swift */,
 			);
 			path = Presenter;
+			sourceTree = "<group>";
+		};
+		6410826C299A9A1B00F20DAC /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				6410826D299A9A3900F20DAC /* Extensions.swift */,
+			);
+			path = Extensions;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -218,12 +232,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				64108266299A6A5200F20DAC /* BaseModel.swift in Sources */,
+				6410826E299A9A3900F20DAC /* Extensions.swift in Sources */,
 				64108262299A69D800F20DAC /* BruteForceService.swift in Sources */,
 				64108264299A6A2B00F20DAC /* BasePresenter.swift in Sources */,
 				64108268299A6B1500F20DAC /* SceneBuilder.swift in Sources */,
 				264DFEE2260D07EF0035EA15 /* BaseView.swift in Sources */,
 				264DFEDE260D07EF0035EA15 /* AppDelegate.swift in Sources */,
 				264DFEE0260D07EF0035EA15 /* SceneDelegate.swift in Sources */,
+				6410826B299A93AE00F20DAC /* Constants.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
