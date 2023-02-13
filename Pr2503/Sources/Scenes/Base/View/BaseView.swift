@@ -3,12 +3,18 @@ import UIKit
 // MARK: - View protocol
 
 protocol BaseViewProtocol: UIViewController {
-    
+    var presenter: BasePresenterProtocol? { get set }
 }
 
 // MARK: - View class
 
 final class BaseViewController: UIViewController, BaseViewProtocol {
+    
+    // MARK: - Prenter
+    
+    var presenter: BasePresenterProtocol?
+    
+    // MARK: - UI
 
     var button: UIButton!
     
@@ -27,11 +33,35 @@ final class BaseViewController: UIViewController, BaseViewProtocol {
         isBlack.toggle()
     }
     
+    // MARK: - Lifecycle
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         self.bruteForce(passwordToUnlock: "1!")
     }
     
+    // MARK: - Configure with and presenter
+    
+    public func configure(with presenter: BasePresenterProtocol?) {
+        self.presenter = presenter
+    }
+    
+    // MARK: - Setups
+
+    private func setupView() {
+        
+    }
+    
+    private func setupHierarchy() {
+        
+    }
+    
+    private func setupLayout() {
+        
+    }
+    
+    // MARK: - Actions
+
     func bruteForce(passwordToUnlock: String) {
         let ALLOWED_CHARACTERS:   [String] = String().printable.map { String($0) }
 

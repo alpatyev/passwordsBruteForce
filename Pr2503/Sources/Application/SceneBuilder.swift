@@ -5,10 +5,11 @@ import UIKit
 
 final class SceneBuilder {
     static func createBaseScene() -> UIViewController {
-        //let model = BaseModel()
-        //let presenter = BasePresenter()
+        let presenter = BasePresenter()
         let view = BaseViewController()
-        // DI
+        presenter.configure(with: view)
+        view.configure(with: presenter)
         return view
     }
 }
+
