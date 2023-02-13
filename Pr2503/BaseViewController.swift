@@ -1,29 +1,27 @@
 import UIKit
 
-class ViewController: UIViewController {
-    @IBOutlet weak var button: UIButton!
+class BaseViewController: UIViewController {
+
+    var button: UIButton!
     
     var isBlack: Bool = false {
         didSet {
             if isBlack {
-                self.view.backgroundColor = .black
+                view.backgroundColor = .black
             } else {
-                self.view.backgroundColor = .white
+                view.backgroundColor = .white
             }
         }
     }
     
-    @IBAction func onBut(_ sender: Any) {
+    
+    func onBut(_ sender: Any) {
         isBlack.toggle()
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        
-        self.bruteForce(passwordToUnlock: "1!gr")
-        
-        // Do any additional setup after loading the view.
+        self.bruteForce(passwordToUnlock: "1!")
     }
     
     func bruteForce(passwordToUnlock: String) {
