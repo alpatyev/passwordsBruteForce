@@ -1,6 +1,14 @@
 import UIKit
 
-class BaseViewController: UIViewController {
+// MARK: - View protocol
+
+protocol BaseViewProtocol: UIViewController {
+    
+}
+
+// MARK: - View class
+
+final class BaseViewController: UIViewController, BaseViewProtocol {
 
     var button: UIButton!
     

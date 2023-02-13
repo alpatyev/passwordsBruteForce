@@ -9,19 +9,27 @@
 /* Begin PBXBuildFile section */
 		264DFEDE260D07EF0035EA15 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 264DFEDD260D07EF0035EA15 /* AppDelegate.swift */; };
 		264DFEE0260D07EF0035EA15 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 264DFEDF260D07EF0035EA15 /* SceneDelegate.swift */; };
-		264DFEE2260D07EF0035EA15 /* BaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 264DFEE1260D07EF0035EA15 /* BaseViewController.swift */; };
+		264DFEE2260D07EF0035EA15 /* BaseView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 264DFEE1260D07EF0035EA15 /* BaseView.swift */; };
 		264DFEE7260D07F00035EA15 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 264DFEE6260D07F00035EA15 /* Assets.xcassets */; };
 		264DFEEA260D07F00035EA15 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 264DFEE8260D07F00035EA15 /* LaunchScreen.storyboard */; };
+		64108262299A69D800F20DAC /* BruteForceService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64108261299A69D800F20DAC /* BruteForceService.swift */; };
+		64108264299A6A2B00F20DAC /* BasePresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64108263299A6A2B00F20DAC /* BasePresenter.swift */; };
+		64108266299A6A5200F20DAC /* BaseModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64108265299A6A5200F20DAC /* BaseModel.swift */; };
+		64108268299A6B1500F20DAC /* SceneBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64108267299A6B1500F20DAC /* SceneBuilder.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		264DFEDA260D07EF0035EA15 /* Pr2503.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Pr2503.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		264DFEDD260D07EF0035EA15 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		264DFEDF260D07EF0035EA15 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
-		264DFEE1260D07EF0035EA15 /* BaseViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseViewController.swift; sourceTree = "<group>"; };
+		264DFEE1260D07EF0035EA15 /* BaseView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseView.swift; sourceTree = "<group>"; };
 		264DFEE6260D07F00035EA15 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		264DFEE9260D07F00035EA15 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		264DFEEB260D07F00035EA15 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		64108261299A69D800F20DAC /* BruteForceService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BruteForceService.swift; sourceTree = "<group>"; };
+		64108263299A6A2B00F20DAC /* BasePresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BasePresenter.swift; sourceTree = "<group>"; };
+		64108265299A6A5200F20DAC /* BaseModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseModel.swift; sourceTree = "<group>"; };
+		64108267299A6B1500F20DAC /* SceneBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneBuilder.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -54,14 +62,90 @@
 		264DFEDC260D07EF0035EA15 /* Pr2503 */ = {
 			isa = PBXGroup;
 			children = (
-				264DFEDD260D07EF0035EA15 /* AppDelegate.swift */,
-				264DFEDF260D07EF0035EA15 /* SceneDelegate.swift */,
-				264DFEE1260D07EF0035EA15 /* BaseViewController.swift */,
-				264DFEE6260D07F00035EA15 /* Assets.xcassets */,
-				264DFEE8260D07F00035EA15 /* LaunchScreen.storyboard */,
-				264DFEEB260D07F00035EA15 /* Info.plist */,
+				64108258299A677C00F20DAC /* Sources */,
+				64108257299A677100F20DAC /* Resources */,
 			);
 			path = Pr2503;
+			sourceTree = "<group>";
+		};
+		64108257299A677100F20DAC /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				264DFEEB260D07F00035EA15 /* Info.plist */,
+				264DFEE6260D07F00035EA15 /* Assets.xcassets */,
+				264DFEE8260D07F00035EA15 /* LaunchScreen.storyboard */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		64108258299A677C00F20DAC /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				64108259299A678300F20DAC /* Application */,
+				6410825A299A678C00F20DAC /* Services */,
+				6410825B299A679900F20DAC /* Scenes */,
+			);
+			path = Sources;
+			sourceTree = "<group>";
+		};
+		64108259299A678300F20DAC /* Application */ = {
+			isa = PBXGroup;
+			children = (
+				264DFEDD260D07EF0035EA15 /* AppDelegate.swift */,
+				264DFEDF260D07EF0035EA15 /* SceneDelegate.swift */,
+				64108267299A6B1500F20DAC /* SceneBuilder.swift */,
+			);
+			path = Application;
+			sourceTree = "<group>";
+		};
+		6410825A299A678C00F20DAC /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				64108261299A69D800F20DAC /* BruteForceService.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		6410825B299A679900F20DAC /* Scenes */ = {
+			isa = PBXGroup;
+			children = (
+				6410825D299A67F800F20DAC /* Base */,
+			);
+			path = Scenes;
+			sourceTree = "<group>";
+		};
+		6410825D299A67F800F20DAC /* Base */ = {
+			isa = PBXGroup;
+			children = (
+				6410825E299A681100F20DAC /* Model */,
+				64108260299A682100F20DAC /* Presenter */,
+				6410825F299A681C00F20DAC /* View */,
+			);
+			path = Base;
+			sourceTree = "<group>";
+		};
+		6410825E299A681100F20DAC /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				64108265299A6A5200F20DAC /* BaseModel.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		6410825F299A681C00F20DAC /* View */ = {
+			isa = PBXGroup;
+			children = (
+				264DFEE1260D07EF0035EA15 /* BaseView.swift */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		64108260299A682100F20DAC /* Presenter */ = {
+			isa = PBXGroup;
+			children = (
+				64108263299A6A2B00F20DAC /* BasePresenter.swift */,
+			);
+			path = Presenter;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -133,7 +217,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				264DFEE2260D07EF0035EA15 /* BaseViewController.swift in Sources */,
+				64108266299A6A5200F20DAC /* BaseModel.swift in Sources */,
+				64108262299A69D800F20DAC /* BruteForceService.swift in Sources */,
+				64108264299A6A2B00F20DAC /* BasePresenter.swift in Sources */,
+				64108268299A6B1500F20DAC /* SceneBuilder.swift in Sources */,
+				264DFEE2260D07EF0035EA15 /* BaseView.swift in Sources */,
 				264DFEDE260D07EF0035EA15 /* AppDelegate.swift in Sources */,
 				264DFEE0260D07EF0035EA15 /* SceneDelegate.swift in Sources */,
 			);
@@ -277,7 +365,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 87G7HNZ9T9;
-				INFOPLIST_FILE = Pr2503/Info.plist;
+				INFOPLIST_FILE = Pr2503/Resources/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -299,7 +387,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 87G7HNZ9T9;
-				INFOPLIST_FILE = Pr2503/Info.plist;
+				INFOPLIST_FILE = Pr2503/Resources/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
