@@ -44,6 +44,7 @@ final class BaseViewController: UIViewController, BaseViewProtocol {
     private lazy var passwordTextField: UITextField = {
         let textField = UITextField()
         textField.addDefaultBorders()
+        textField.delegate = self
         textField.isSecureTextEntry = true
         textField.textAlignment = .center
         textField.placeholder = "password"
@@ -63,13 +64,13 @@ final class BaseViewController: UIViewController, BaseViewProtocol {
     }()
     
     
-    private lazy var resetStartButton: UIButton = {
+    private lazy var processControlButton: UIButton = {
         let button = UIButton()
         button.addDefaultBorders()
         button.titleLabel?.textAlignment = .center
         button.setTitleColor(Constants.Colors.green, for: .normal)
         button.backgroundColor = Constants.Colors.black
-        button.addTarget(self, action: #selector(resetStartTapped), for: .touchUpInside)
+        button.addTarget(self, action: #selector(processControlTapped), for: .touchUpInside)
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
@@ -80,7 +81,7 @@ final class BaseViewController: UIViewController, BaseViewProtocol {
         textView.text = "****"
         textView.isEditable = false
         textView.isSelectable = false
-        textView.isScrollEnabled = true
+        textView.isUserInteractionEnabled = false
         textView.textAlignment = .center
         textView.font = .monospacedDigitSystemFont(ofSize: 20,
                                                    weight: .regular)
@@ -113,7 +114,7 @@ final class BaseViewController: UIViewController, BaseViewProtocol {
     
     private func setupHierarchy() {
         view.addSubview(processConsoleLabel)
-        view.addSubview(resetStartButton)
+        view.addSubview(processControlButton)
         view.addSubview(startPauseButton)
         view.addSubview(passwordTextField)
         view.addSubview(processIndicator)
@@ -152,15 +153,15 @@ final class BaseViewController: UIViewController, BaseViewProtocol {
         ])
         
         NSLayoutConstraint.activate([
-            resetStartButton.topAnchor.constraint(equalTo: startPauseButton.bottomAnchor,
+            processControlButton.topAnchor.constraint(equalTo: startPauseButton.bottomAnchor,
                                                   constant: Constants.Layout.defaultSpacing * 2),
-            resetStartButton.heightAnchor.constraint(equalToConstant: Constants.Layout.defaultSpacing * 2),
-            resetStartButton.leftAnchor.constraint(equalTo: startPauseButton.leftAnchor),
-            resetStartButton.rightAnchor.constraint(equalTo: dayNightButton.rightAnchor),
+            processControlButton.heightAnchor.constraint(equalToConstant: Constants.Layout.defaultSpacing * 2),
+            processControlButton.leftAnchor.constraint(equalTo: startPauseButton.leftAnchor),
+            processControlButton.rightAnchor.constraint(equalTo: dayNightButton.rightAnchor),
         ])
         
         NSLayoutConstraint.activate([
-            processConsoleLabel.topAnchor.constraint(greaterThanOrEqualTo: resetStartButton.bottomAnchor,
+            processConsoleLabel.topAnchor.constraint(greaterThanOrEqualTo: processControlButton.bottomAnchor,
                                                      constant: Constants.Layout.defaultSpacing),
             processConsoleLabel.leftAnchor.constraint(equalTo: startPauseButton.leftAnchor),
             processConsoleLabel.rightAnchor.constraint(equalTo: dayNightButton.rightAnchor),
@@ -168,17 +169,46 @@ final class BaseViewController: UIViewController, BaseViewProtocol {
         ])
     }
     
-    // MARK: - Actions
+    // MARK: - View output
+    
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        if let touch = touches.first, touch.view != passwordTextField {
+            presenter?.tappedOverTextfield()
+        }
+    }
     
     @objc private func dayNightTapped() {
-        
+        presenter?.dayNightButton()
     }
         
     @objc private func startPauseTapped() {
+        presenter?.startPauseButton()
     }
     
-    @objc private func resetStartTapped() {
+    @objc private func processControlTapped() {
+        presenter?.processControlButton()
     }
     
+}
+
+extension BaseViewController: UITextFieldDelegate {
+    func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
+        presenter?.textFieldOnScreen(is: true)
+        return true
+    }
+    
+    func textFieldShouldEndEditing(_ textField: UITextField) -> Bool {
+        presenter?.textFieldOnScreen(is: false)
+        return true
+    }
+    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        presenter?.textFieldReturn(with: textField.text)
+        return true
+    }
+    
+    func textFieldDidChangeSelection(_ textField: UITextField) {
+        presenter?.textFieldChangePassword(with: textField.text)
+    }
 }
 
