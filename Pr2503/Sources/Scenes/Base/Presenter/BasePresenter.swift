@@ -7,7 +7,7 @@ protocol BasePresenterProtocol: AnyObject {
     
     func tappedOverTextfield()
     func textFieldReturn(with text: String?)
-    func textFieldOnScreen(is onScreen: Bool)
+    func textFieldOnScreen(_ onScreen: Bool)
     func textFieldChangePassword(with text: String?)
     
     func dayNightButton()
@@ -35,17 +35,23 @@ final class BasePresenter: BasePresenterProtocol {
     
     // MARK: - View send events
     
+    var onscr = false
+    
     func tappedOverTextfield() {
-        print("close textfield")
+        if onscr {
+            print("close textfield")
+            delegate?.hideKeyboard()
+        }
     }
    
-    func textFieldOnScreen(is onScreen: Bool) {
+    
+    func textFieldOnScreen(_ onScreen: Bool) {
+        onscr = onScreen
         if onScreen {
             print("ON SCREEN")
         } else {
             print("CLOSED")
         }
-
     }
     
     func textFieldReturn(with text: String?) {
@@ -53,6 +59,7 @@ final class BasePresenter: BasePresenterProtocol {
             return
         }
         print(#function + " with \(password)")
+        delegate?.hideKeyboard()
     }
     
     func textFieldChangePassword(with text: String?) {
@@ -63,8 +70,11 @@ final class BasePresenter: BasePresenterProtocol {
         print(count)
     }
     
+    var lightMode = true
+    
     func dayNightButton() {
-        print(#function)
+        lightMode.toggle()
+        lightMode ? delegate?.turnLightMode() : delegate?.turnDarkMode()
     }
     
     func startPauseButton() {

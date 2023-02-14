@@ -4,12 +4,31 @@ import UIKit
 
 protocol BaseViewProtocol: UIViewController {
     var presenter: BasePresenterProtocol? { get set }
+    
+    func turnLightMode()
+    func turnDarkMode()
+    
+    func showControls()
+    func hideControls()
+    func controlsImage(with name: String)
+    
+    func startAnimation()
+    func endAnimation()
+    
+    func hideKeyboard()
+    
+    func showPassword()
+    func hidePassword()
+    
+    func correctTextField(with text: String)
+    func updateButton(with text: String)
+    func updateConsole(with text: String)
 }
 
 // MARK: - View class
 
 final class BaseViewController: UIViewController, BaseViewProtocol {
-    
+
     // MARK: - Prenter
     
     var presenter: BasePresenterProtocol?
@@ -19,7 +38,6 @@ final class BaseViewController: UIViewController, BaseViewProtocol {
     private lazy var dayNightButton: UIButton = {
         let button = UIButton()
         button.tintColor = Constants.Colors.black
-        //button.setImage(UIImage(systemName: "moon"), for: .highlighted)
         button.setImage(UIImage(systemName: "sun.max"), for: .normal)
         button.contentVerticalAlignment = .fill
         button.contentHorizontalAlignment = .fill
@@ -33,7 +51,7 @@ final class BaseViewController: UIViewController, BaseViewProtocol {
         button.setImage(UIImage(systemName: "play.circle"), for: .normal)
         button.tintColor = Constants.Colors.black
         button.clipsToBounds = false
-        button.isHidden = true
+        button.isHidden = false
         button.contentVerticalAlignment = .fill
         button.contentHorizontalAlignment = .fill
         button.addTarget(self, action: #selector(startPauseTapped), for: .touchUpInside)
@@ -48,7 +66,7 @@ final class BaseViewController: UIViewController, BaseViewProtocol {
         textField.isSecureTextEntry = true
         textField.textAlignment = .center
         textField.placeholder = "password"
-        textField.backgroundColor = Constants.Colors.white
+        textField.keyboardType = .asciiCapable
         textField.font = .monospacedDigitSystemFont(ofSize: 28,
                                                     weight: .regular)
         textField.translatesAutoresizingMaskIntoConstraints = false
@@ -59,6 +77,7 @@ final class BaseViewController: UIViewController, BaseViewProtocol {
         let indicator = UIActivityIndicatorView()
         indicator.style = .large
         indicator.hidesWhenStopped = true
+        indicator.startAnimating()
         indicator.translatesAutoresizingMaskIntoConstraints = false
         return indicator
     }()
@@ -149,7 +168,7 @@ final class BaseViewController: UIViewController, BaseViewProtocol {
         
         NSLayoutConstraint.activate([
             processIndicator.centerYAnchor.constraint(equalTo: passwordTextField.centerYAnchor),
-            processIndicator.rightAnchor.constraint(equalTo: dayNightButton.rightAnchor)
+            processIndicator.centerXAnchor.constraint(equalTo: dayNightButton.centerXAnchor)
         ])
         
         NSLayoutConstraint.activate([
@@ -169,7 +188,75 @@ final class BaseViewController: UIViewController, BaseViewProtocol {
         ])
     }
     
-    // MARK: - View output
+    // MARK: - Presenter delegate methods
+    
+    func turnLightMode() {
+        startPauseButton.tintColor = Constants.Colors.black
+        
+        dayNightButton.tintColor = Constants.Colors.black
+        dayNightButton.setImage(UIImage(systemName: "sun.max"), for: .normal)
+        
+        overrideUserInterfaceStyle = .light
+        setNeedsStatusBarAppearanceUpdate()
+        view.backgroundColor = Constants.Colors.white
+    }
+    
+    func turnDarkMode() {
+        startPauseButton.tintColor = Constants.Colors.white
+        
+        dayNightButton.tintColor = Constants.Colors.white
+        dayNightButton.setImage(UIImage(systemName: "moon"), for: .normal)
+        
+        overrideUserInterfaceStyle = .dark
+        setNeedsStatusBarAppearanceUpdate()
+        view.backgroundColor = Constants.Colors.black
+    }
+    
+    func showControls() {
+        startPauseButton.isHidden = true
+    }
+    
+    func hideControls() {
+        startPauseButton.isHidden = true
+    }
+    
+    func controlsImage(with name: String) {
+        startPauseButton.setImage(UIImage(systemName: name), for: .normal)
+    }
+    
+    func startAnimation() {
+        processIndicator.startAnimating()
+    }
+    
+    func endAnimation() {
+        processIndicator.stopAnimating()
+    }
+    
+    func hideKeyboard() {
+        passwordTextField.resignFirstResponder()
+    }
+    
+    func showPassword() {
+        passwordTextField.isSecureTextEntry = false
+    }
+    
+    func hidePassword() {
+        passwordTextField.isSecureTextEntry = true
+    }
+    
+    func correctTextField(with text: String) {
+        passwordTextField.text = text
+    }
+    
+    func updateButton(with text: String) {
+        processControlButton.setTitle(text, for: .normal)
+    }
+    
+    func updateConsole(with text: String) {
+        processConsoleLabel.text = text
+    }
+    
+    // MARK: - View events
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         if let touch = touches.first, touch.view != passwordTextField {
@@ -188,17 +275,16 @@ final class BaseViewController: UIViewController, BaseViewProtocol {
     @objc private func processControlTapped() {
         presenter?.processControlButton()
     }
-    
 }
 
 extension BaseViewController: UITextFieldDelegate {
     func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
-        presenter?.textFieldOnScreen(is: true)
+        presenter?.textFieldOnScreen(true)
         return true
     }
     
     func textFieldShouldEndEditing(_ textField: UITextField) -> Bool {
-        presenter?.textFieldOnScreen(is: false)
+        presenter?.textFieldOnScreen(false)
         return true
     }
     
