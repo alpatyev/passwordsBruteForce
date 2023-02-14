@@ -19,7 +19,7 @@ enum Constants {
     enum Messages {
         enum Status {
             static let startNewProcess = "START NEW BRUTFORCE"
-            static let cracking = "CRACKING..."
+            static let working = "WORKING..."
             static let paused = "PAUSED"
         }
         

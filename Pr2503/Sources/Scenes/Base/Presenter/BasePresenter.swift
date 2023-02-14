@@ -48,6 +48,7 @@ final class BasePresenter: BasePresenterProtocol, BruteForce {
         viewDelegate = view
         bruteForceDelegate = service
         bruteForceDelegate?.delegate = self
+        performViewUpdates()
     }
     
     // MARK: - Called when model has been updated
@@ -56,19 +57,30 @@ final class BasePresenter: BasePresenterProtocol, BruteForce {
         model.isDarkMode ? viewDelegate?.turnDarkMode() : viewDelegate?.turnLightMode()
         model.isAnimating ? viewDelegate?.startAnimation() : viewDelegate?.endAnimation()
         
+        if !model.isKeyboardShowed {
+            viewDelegate?.hideKeyboard()
+        }
+        
         if model.state == .stopped {
             viewDelegate?.hideControls()
             viewDelegate?.unlockTextfield()
+            viewDelegate?.updateButton(with: Constants.Messages.Status.startNewProcess)
         } else {
-            let image = model.state == .paused ? "play.circle" : "pause.circle"
-            viewDelegate?.controlsImage(named: image)
+            var image = String()
+            var status = String()
             
+            if model.state == .paused {
+                image = "play.circle"
+                status = Constants.Messages.Status.paused
+            } else {
+                image = "pause.circle"
+                status = Constants.Messages.Status.working
+            }
+            
+            viewDelegate?.updateButton(with: status)
+            viewDelegate?.controlsImage(named: image)
             viewDelegate?.showControls()
             viewDelegate?.lockTextField()
-        }
-        
-        if !model.isKeyboardShowed {
-            viewDelegate?.hideKeyboard()
         }
     }
  
@@ -88,6 +100,7 @@ final class BasePresenter: BasePresenterProtocol, BruteForce {
         }
         model.recievedPassword = password
         model.isKeyboardShowed = false
+        model.state = .running
     }
     
     func textFieldChangePassword(with text: String?) {

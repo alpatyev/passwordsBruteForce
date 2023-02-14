@@ -39,10 +39,17 @@ final class BaseViewController: UIViewController, BaseViewProtocol {
     
     // MARK: - UI
     
+    private lazy var rainingCodeBackground: UIImageView = {
+        let imageView = UIImageView()
+        imageView.image = UIImage(named: "rainingCode")
+        imageView.layer.opacity = 0.5
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        return imageView
+    }()
+    
     private lazy var dayNightButton: UIButton = {
         let button = UIButton()
         button.tintColor = Constants.Colors.black
-        button.setImage(UIImage(systemName: "sun.max"), for: .normal)
         button.contentVerticalAlignment = .fill
         button.contentHorizontalAlignment = .fill
         button.addTarget(self, action: #selector(dayNightTapped), for: .touchUpInside)
@@ -52,7 +59,6 @@ final class BaseViewController: UIViewController, BaseViewProtocol {
     
     private lazy var startPauseButton: UIButton = {
         let button = UIButton()
-        button.setImage(UIImage(systemName: "play.circle"), for: .normal)
         button.tintColor = Constants.Colors.black
         button.clipsToBounds = false
         button.isHidden = true
@@ -69,7 +75,6 @@ final class BaseViewController: UIViewController, BaseViewProtocol {
         textField.delegate = self
         textField.isSecureTextEntry = true
         textField.textAlignment = .center
-        textField.placeholder = "password"
         textField.keyboardType = .asciiCapable
         textField.font = .monospacedDigitSystemFont(ofSize: 28,
                                                     weight: .regular)
@@ -100,7 +105,6 @@ final class BaseViewController: UIViewController, BaseViewProtocol {
     private lazy var processConsoleLabel: UITextView = {
         let textView = UITextView()
         textView.addDefaultBorders()
-        textView.text = "****"
         textView.isEditable = false
         textView.isSelectable = false
         textView.isUserInteractionEnabled = false
@@ -135,6 +139,7 @@ final class BaseViewController: UIViewController, BaseViewProtocol {
     }
     
     private func setupHierarchy() {
+        view.addSubview(rainingCodeBackground)
         view.addSubview(processConsoleLabel)
         view.addSubview(processControlButton)
         view.addSubview(startPauseButton)
@@ -144,6 +149,13 @@ final class BaseViewController: UIViewController, BaseViewProtocol {
     }
     
     private func setupLayout() {
+        NSLayoutConstraint.activate([
+            rainingCodeBackground.topAnchor.constraint(equalTo: view.topAnchor),
+            rainingCodeBackground.leftAnchor.constraint(equalTo: view.leftAnchor),
+            rainingCodeBackground.rightAnchor.constraint(equalTo: view.rightAnchor),
+            rainingCodeBackground.bottomAnchor.constraint(equalTo: view.centerYAnchor)
+        ])
+        
         NSLayoutConstraint.activate([
             dayNightButton.heightAnchor.constraint(equalToConstant: Constants.Layout.defaultSpacing * 2),
             dayNightButton.widthAnchor.constraint(equalToConstant: Constants.Layout.defaultSpacing * 2),
@@ -196,6 +208,9 @@ final class BaseViewController: UIViewController, BaseViewProtocol {
     func turnLightMode() {
         startPauseButton.tintColor = Constants.Colors.black
         
+        passwordTextField.attributedPlaceholder = NSAttributedString(string: "password",
+                                                                     attributes: [NSAttributedString.Key.foregroundColor : Constants.Colors.black])
+        
         dayNightButton.tintColor = Constants.Colors.black
         dayNightButton.setImage(UIImage(systemName: "sun.max"), for: .normal)
         
@@ -206,6 +221,9 @@ final class BaseViewController: UIViewController, BaseViewProtocol {
     
     func turnDarkMode() {
         startPauseButton.tintColor = Constants.Colors.white
+        
+        passwordTextField.attributedPlaceholder = NSAttributedString(string: "password",
+                                                                     attributes: [NSAttributedString.Key.foregroundColor : Constants.Colors.white])
         
         dayNightButton.tintColor = Constants.Colors.white
         dayNightButton.setImage(UIImage(systemName: "moon"), for: .normal)
