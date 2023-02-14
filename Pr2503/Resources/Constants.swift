@@ -15,5 +15,16 @@ enum Constants {
         static let thinBorderWidth: CGFloat = 2
         static let defaultSpacing: CGFloat = 20
     }
+    
+    enum Messages {
+        enum Status {
+            static let startNewProcess = "START NEW BRUTFORCE"
+            static let cracking = "CRACKING..."
+            static let paused = "PAUSED"
+        }
+        
+        enum Errors {
+            static let reachedSymbolsLimit = "Password length cannot be more than 10 symbols."
+        }
+    }
 }
-

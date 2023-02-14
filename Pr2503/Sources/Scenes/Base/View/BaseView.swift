@@ -10,19 +10,23 @@ protocol BaseViewProtocol: UIViewController {
     
     func showControls()
     func hideControls()
-    func controlsImage(with name: String)
+    func controlsImage(named: String)
     
     func startAnimation()
     func endAnimation()
     
     func hideKeyboard()
+    func showAlert(with text: String)
     
     func showPassword()
     func hidePassword()
     
-    func correctTextField(with text: String)
     func updateButton(with text: String)
     func updateConsole(with text: String)
+    
+    func lockTextField()
+    func unlockTextfield()
+    func correctTextField(with text: String)
 }
 
 // MARK: - View class
@@ -51,7 +55,7 @@ final class BaseViewController: UIViewController, BaseViewProtocol {
         button.setImage(UIImage(systemName: "play.circle"), for: .normal)
         button.tintColor = Constants.Colors.black
         button.clipsToBounds = false
-        button.isHidden = false
+        button.isHidden = true
         button.contentVerticalAlignment = .fill
         button.contentHorizontalAlignment = .fill
         button.addTarget(self, action: #selector(startPauseTapped), for: .touchUpInside)
@@ -77,7 +81,6 @@ final class BaseViewController: UIViewController, BaseViewProtocol {
         let indicator = UIActivityIndicatorView()
         indicator.style = .large
         indicator.hidesWhenStopped = true
-        indicator.startAnimating()
         indicator.translatesAutoresizingMaskIntoConstraints = false
         return indicator
     }()
@@ -213,15 +216,15 @@ final class BaseViewController: UIViewController, BaseViewProtocol {
     }
     
     func showControls() {
-        startPauseButton.isHidden = true
+        startPauseButton.isHidden = false
     }
     
     func hideControls() {
         startPauseButton.isHidden = true
     }
     
-    func controlsImage(with name: String) {
-        startPauseButton.setImage(UIImage(systemName: name), for: .normal)
+    func controlsImage(named: String) {
+        startPauseButton.setImage(UIImage(systemName: named), for: .normal)
     }
     
     func startAnimation() {
@@ -244,8 +247,13 @@ final class BaseViewController: UIViewController, BaseViewProtocol {
         passwordTextField.isSecureTextEntry = true
     }
     
-    func correctTextField(with text: String) {
-        passwordTextField.text = text
+    func showAlert(with text: String) {
+        let alert = UIAlertController(title: "Warning!",
+                                      message: text,
+                                      preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK",
+                                      style: .cancel))
+        self.present(alert, animated: false, completion: nil)
     }
     
     func updateButton(with text: String) {
@@ -254,6 +262,18 @@ final class BaseViewController: UIViewController, BaseViewProtocol {
     
     func updateConsole(with text: String) {
         processConsoleLabel.text = text
+    }
+    
+    func lockTextField() {
+        passwordTextField.isUserInteractionEnabled = false
+    }
+    
+    func unlockTextfield() {
+        passwordTextField.isUserInteractionEnabled = true
+    }
+    
+    func correctTextField(with text: String) {
+        passwordTextField.text = text
     }
     
     // MARK: - View events
@@ -279,12 +299,12 @@ final class BaseViewController: UIViewController, BaseViewProtocol {
 
 extension BaseViewController: UITextFieldDelegate {
     func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
-        presenter?.textFieldOnScreen(true)
+        presenter?.keyboardShowed(true)
         return true
     }
     
     func textFieldShouldEndEditing(_ textField: UITextField) -> Bool {
-        presenter?.textFieldOnScreen(false)
+        presenter?.keyboardShowed(false)
         return true
     }
     
@@ -297,4 +317,3 @@ extension BaseViewController: UITextFieldDelegate {
         presenter?.textFieldChangePassword(with: textField.text)
     }
 }
-

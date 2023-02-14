@@ -1,13 +1,13 @@
-import Foundation
 
-// MARK: - Presenter protocol
+// MARK: - Presenter-view protocol
 
 protocol BasePresenterProtocol: AnyObject {
-    var delegate: BaseViewProtocol? { get set }
+    var viewDelegate: BaseViewProtocol? { get set }
+    
+    func keyboardShowed(_ onScreen: Bool)
     
     func tappedOverTextfield()
     func textFieldReturn(with text: String?)
-    func textFieldOnScreen(_ onScreen: Bool)
     func textFieldChangePassword(with text: String?)
     
     func dayNightButton()
@@ -15,74 +15,110 @@ protocol BasePresenterProtocol: AnyObject {
     func processControlButton()
 }
 
+// MARK: - Presenter-service protocol
+
+protocol BruteForce {
+    
+}
+
 // MARK: - Presenter class
 
-final class BasePresenter: BasePresenterProtocol {
+final class BasePresenter: BasePresenterProtocol, BruteForce {
     
     // MARK: - Model
     
-    private var model = BaseModel()
+    private var model = BaseModel() {
+        didSet {
+            performViewUpdates()
+        }
+    }
+    
+    // MARK: - Delegates
+    
+    weak var viewDelegate: BaseViewProtocol?
+    private var bruteForceDelegate: BruteForceProtocol?
+    
     
     // MARK: - View
     
-    weak var delegate: BaseViewProtocol?
     
-    // MARK: - Configure with and view
+    // MARK: - Configure with view
     
-    public func configure(with view: BaseViewProtocol?) {
-        self.delegate = view
+    public func configure(with view: BaseViewProtocol?, service: BruteForceProtocol) {
+        viewDelegate = view
+        bruteForceDelegate = service
+        bruteForceDelegate?.delegate = self
     }
     
+    // MARK: - Called when model has been updated
+        
+    private func performViewUpdates() {        
+        model.isDarkMode ? viewDelegate?.turnDarkMode() : viewDelegate?.turnLightMode()
+        model.isAnimating ? viewDelegate?.startAnimation() : viewDelegate?.endAnimation()
+        
+        if model.state == .stopped {
+            viewDelegate?.hideControls()
+            viewDelegate?.unlockTextfield()
+        } else {
+            let image = model.state == .paused ? "play.circle" : "pause.circle"
+            viewDelegate?.controlsImage(named: image)
+            
+            viewDelegate?.showControls()
+            viewDelegate?.lockTextField()
+        }
+        
+        if !model.isKeyboardShowed {
+            viewDelegate?.hideKeyboard()
+        }
+    }
+ 
     // MARK: - View send events
     
-    var onscr = false
+    func keyboardShowed(_ onScreen: Bool) {
+        model.isKeyboardShowed = onScreen
+    }
     
     func tappedOverTextfield() {
-        if onscr {
-            print("close textfield")
-            delegate?.hideKeyboard()
-        }
+        model.isKeyboardShowed = false
     }
    
-    
-    func textFieldOnScreen(_ onScreen: Bool) {
-        onscr = onScreen
-        if onScreen {
-            print("ON SCREEN")
-        } else {
-            print("CLOSED")
-        }
-    }
-    
     func textFieldReturn(with text: String?) {
         guard let password = text else {
             return
         }
-        print(#function + " with \(password)")
-        delegate?.hideKeyboard()
+        model.recievedPassword = password
+        model.isKeyboardShowed = false
     }
     
     func textFieldChangePassword(with text: String?) {
-        guard let count = text?.count else {
-            print("no count")
-            return
+        if let newPassword = text, newPassword.count < 11 {
+            model.recievedPassword = newPassword
+        } else {
+            viewDelegate?.correctTextField(with: model.recievedPassword)
+            viewDelegate?.showAlert(with: Constants.Messages.Errors.reachedSymbolsLimit)
         }
-        print(count)
     }
-    
-    var lightMode = true
-    
+        
     func dayNightButton() {
-        lightMode.toggle()
-        lightMode ? delegate?.turnLightMode() : delegate?.turnDarkMode()
+        model.isDarkMode.toggle()
     }
     
     func startPauseButton() {
-        print(#function)
+        if model.state == .running {
+            model.state = .paused
+        } else if model.state == .paused {
+            model.state = .running
+        }
     }
     
     func processControlButton() {
-        print(#function)
+        switch model.state {
+            case .stopped:
+                model.state = .running
+            case .running:
+                model.state = .stopped
+            case .paused:
+                model.state = .stopped
+        }
     }
 }
-

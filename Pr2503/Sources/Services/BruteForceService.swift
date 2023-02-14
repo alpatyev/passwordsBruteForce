@@ -1,8 +1,22 @@
 import Foundation
 
+// MARK: - Brute force delegate
+
+protocol BruteForceProtocol {
+    var delegate: BruteForce? { get set }
+    var console: String { get set }
+}
+
 // MARK: - Brute force class
 
-final class BruteForceService {
+final class BruteForceService: BruteForceProtocol {
+    
+    // MARK: - Delegate
+    
+    var delegate: BruteForce?
+    
+    var console = "log:\nsome password"
+    
     func indexOf(character: Character, _ array: [String]) -> Int {
         return array.firstIndex(of: String(character))!
     }
@@ -18,7 +32,7 @@ final class BruteForceService {
             str.append(characterAt(index: 0, array))
         }
         else {
-            str.replace(at: str.count - 1,
+            str = replace(in: str, at: str.count - 1,
                         with: characterAt(index: (indexOf(character: str.last!, array) + 1) % array.count, array))
 
             if indexOf(character: str.last!, array) == 0 {
@@ -44,21 +58,10 @@ final class BruteForceService {
         
         print(password)
     }
-}
-
-extension String {
-    var digits:      String { return "0123456789" }
-    var lowercase:   String { return "abcdefghijklmnopqrstuvwxyz" }
-    var uppercase:   String { return "ABCDEFGHIJKLMNOPQRSTUVWXYZ" }
-    var punctuation: String { return "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~" }
-    var letters:     String { return lowercase + uppercase }
-    var printable:   String { return digits + letters + punctuation }
-
-
-
-    mutating func replace(at index: Int, with character: Character) {
-        var stringArray = Array(self)
+    
+    func replace(in string: String, at index: Int, with character: Character) -> String {
+        var stringArray = Array(string)
         stringArray[index] = character
-        self = String(stringArray)
+        return String(stringArray)
     }
 }
