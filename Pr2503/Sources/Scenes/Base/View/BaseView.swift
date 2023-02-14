@@ -18,20 +18,26 @@ final class BaseViewController: UIViewController, BaseViewProtocol {
     
     private lazy var dayNightButton: UIButton = {
         let button = UIButton()
-        button.addDefaultBorders()
+        button.tintColor = Constants.Colors.black
+        //button.setImage(UIImage(systemName: "moon"), for: .highlighted)
+        button.setImage(UIImage(systemName: "sun.max"), for: .normal)
+        button.contentVerticalAlignment = .fill
+        button.contentHorizontalAlignment = .fill
+        button.addTarget(self, action: #selector(dayNightTapped), for: .touchUpInside)
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
     
-    private lazy var startStopButton: UIButton = {
+    private lazy var startPauseButton: UIButton = {
         let button = UIButton()
         button.setImage(UIImage(systemName: "play.circle"), for: .normal)
-        button.tintColor = .black
+        button.tintColor = Constants.Colors.black
         button.clipsToBounds = false
+        button.isHidden = true
         button.contentVerticalAlignment = .fill
         button.contentHorizontalAlignment = .fill
+        button.addTarget(self, action: #selector(startPauseTapped), for: .touchUpInside)
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.addTarget(self, action: #selector(tapped), for: .touchUpInside)
         return button
     }()
     
@@ -51,20 +57,21 @@ final class BaseViewController: UIViewController, BaseViewProtocol {
     private lazy var processIndicator: UIActivityIndicatorView = {
         let indicator = UIActivityIndicatorView()
         indicator.style = .large
-        indicator.color = .black
         indicator.hidesWhenStopped = true
         indicator.translatesAutoresizingMaskIntoConstraints = false
         return indicator
     }()
-
-    private lazy var processStatusLabel: UILabel = {
-        let label = UILabel()
-        label.addDefaultBorders()
-        label.textAlignment = .center
-        label.textColor = Constants.Colors.green
-        label.backgroundColor = Constants.Colors.black
-        label.translatesAutoresizingMaskIntoConstraints = false
-        return label
+    
+    
+    private lazy var resetStartButton: UIButton = {
+        let button = UIButton()
+        button.addDefaultBorders()
+        button.titleLabel?.textAlignment = .center
+        button.setTitleColor(Constants.Colors.green, for: .normal)
+        button.backgroundColor = Constants.Colors.black
+        button.addTarget(self, action: #selector(resetStartTapped), for: .touchUpInside)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        return button
     }()
     
     private lazy var processConsoleLabel: UITextView = {
@@ -106,75 +113,71 @@ final class BaseViewController: UIViewController, BaseViewProtocol {
     
     private func setupHierarchy() {
         view.addSubview(processConsoleLabel)
-        view.addSubview(processStatusLabel)
-        view.addSubview(startStopButton)
+        view.addSubview(resetStartButton)
+        view.addSubview(startPauseButton)
         view.addSubview(passwordTextField)
         view.addSubview(processIndicator)
+        view.addSubview(dayNightButton)
     }
     
     private func setupLayout() {
         NSLayoutConstraint.activate([
-            processConsoleLabel.topAnchor.constraint(greaterThanOrEqualTo: view.safeAreaLayoutGuide.centerYAnchor,
-                                                     constant: -Constants.Layout.defaultSpacing * 3),
-         
-            processConsoleLabel.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor,
-                                                      constant: Constants.Layout.defaultSpacing),
-            processConsoleLabel.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor,
-                                                       constant: -Constants.Layout.defaultSpacing),
-            processConsoleLabel.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
+            dayNightButton.heightAnchor.constraint(equalToConstant: Constants.Layout.defaultSpacing * 2),
+            dayNightButton.widthAnchor.constraint(equalToConstant: Constants.Layout.defaultSpacing * 2),
+            dayNightButton.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor,
+                                                  constant: -Constants.Layout.defaultSpacing),
+            dayNightButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor)
         ])
         
         NSLayoutConstraint.activate([
-            processStatusLabel.heightAnchor.constraint(equalToConstant: Constants.Layout.defaultSpacing * 2),
-            processStatusLabel.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor,
-                                                     constant: Constants.Layout.defaultSpacing),
-            processStatusLabel.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor,
-                                                       constant: -Constants.Layout.defaultSpacing),
-            processStatusLabel.bottomAnchor.constraint(equalTo: processConsoleLabel.topAnchor,
-                                                       constant: -Constants.Layout.defaultSpacing / 2)
+            startPauseButton.heightAnchor.constraint(equalToConstant: Constants.Layout.defaultSpacing * 2),
+            startPauseButton.widthAnchor.constraint(equalToConstant: Constants.Layout.defaultSpacing * 2),
+            startPauseButton.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor,
+                                                   constant: Constants.Layout.defaultSpacing),
+            startPauseButton.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: -view.frame.height / 4)
         ])
         
         NSLayoutConstraint.activate([
-            startStopButton.heightAnchor.constraint(equalToConstant: Constants.Layout.defaultSpacing * 3),
-            startStopButton.widthAnchor.constraint(equalToConstant: Constants.Layout.defaultSpacing * 3),
-            startStopButton.leftAnchor.constraint(equalTo: processStatusLabel.leftAnchor),
-            startStopButton.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: -view.frame.height / 4)
-        ])
-        
-        NSLayoutConstraint.activate([
-            passwordTextField.heightAnchor.constraint(equalTo: startStopButton.heightAnchor),
-            passwordTextField.leftAnchor.constraint(equalTo: startStopButton.rightAnchor,
+            passwordTextField.heightAnchor.constraint(equalTo: startPauseButton.heightAnchor),
+            passwordTextField.leftAnchor.constraint(equalTo: startPauseButton.rightAnchor,
                                                     constant: Constants.Layout.defaultSpacing),
-            passwordTextField.rightAnchor.constraint(equalTo: processIndicator.leftAnchor,
-                                                     constant: -Constants.Layout.defaultSpacing),
-            passwordTextField.centerYAnchor.constraint(equalTo: startStopButton.centerYAnchor)
+            passwordTextField.rightAnchor.constraint(equalTo: dayNightButton.rightAnchor,
+                                                     constant: -Constants.Layout.defaultSpacing * 3),
+            passwordTextField.centerYAnchor.constraint(equalTo: startPauseButton.centerYAnchor)
         ])
         
         NSLayoutConstraint.activate([
-            processIndicator.heightAnchor.constraint(equalTo: startStopButton.heightAnchor),
-            processIndicator.widthAnchor.constraint(equalTo: startStopButton.widthAnchor),
-            processIndicator.rightAnchor.constraint(equalTo: processStatusLabel.rightAnchor),
-            processIndicator.centerYAnchor.constraint(equalTo: passwordTextField.centerYAnchor)
+            processIndicator.centerYAnchor.constraint(equalTo: passwordTextField.centerYAnchor),
+            processIndicator.rightAnchor.constraint(equalTo: dayNightButton.rightAnchor)
+        ])
+        
+        NSLayoutConstraint.activate([
+            resetStartButton.topAnchor.constraint(equalTo: startPauseButton.bottomAnchor,
+                                                  constant: Constants.Layout.defaultSpacing * 2),
+            resetStartButton.heightAnchor.constraint(equalToConstant: Constants.Layout.defaultSpacing * 2),
+            resetStartButton.leftAnchor.constraint(equalTo: startPauseButton.leftAnchor),
+            resetStartButton.rightAnchor.constraint(equalTo: dayNightButton.rightAnchor),
+        ])
+        
+        NSLayoutConstraint.activate([
+            processConsoleLabel.topAnchor.constraint(greaterThanOrEqualTo: resetStartButton.bottomAnchor,
+                                                     constant: Constants.Layout.defaultSpacing),
+            processConsoleLabel.leftAnchor.constraint(equalTo: startPauseButton.leftAnchor),
+            processConsoleLabel.rightAnchor.constraint(equalTo: dayNightButton.rightAnchor),
+            processConsoleLabel.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
         ])
     }
     
     // MARK: - Actions
-
-    var animatingornot = false {
-        didSet {
-            if animatingornot == true {
-                startStopButton.setImage(UIImage(systemName: "pause.circle"), for: .normal)
-                processIndicator.startAnimating()
-
-            } else {
-                startStopButton.setImage(UIImage(systemName: "play.circle"), for: .normal)
-                processIndicator.stopAnimating()
-            }
-        }
+    
+    @objc private func dayNightTapped() {
+        
+    }
+        
+    @objc private func startPauseTapped() {
     }
     
-    @objc private func tapped() {
-        animatingornot.toggle()
+    @objc private func resetStartTapped() {
     }
     
 }
