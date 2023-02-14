@@ -1,3 +1,4 @@
+import Foundation
 
 // MARK: - Presenter-view protocol
 
@@ -18,12 +19,18 @@ protocol BasePresenterProtocol: AnyObject {
 // MARK: - Presenter-service protocol
 
 protocol BruteForce {
-    
+    func shareLog(with text: String)
 }
 
 // MARK: - Presenter class
 
 final class BasePresenter: BasePresenterProtocol, BruteForce {
+    func shareLog(with text: String) {
+        DispatchQueue.main.async {
+            self.viewDelegate?.updateConsole(with: text)
+        }
+    }
+    
     
     // MARK: - Model
     
@@ -52,8 +59,21 @@ final class BasePresenter: BasePresenterProtocol, BruteForce {
     }
     
     // MARK: - Called when model has been updated
+    
+    private func modelConsoleLog() {
+        print("> UPDATED STATE   : \(model.state)")
+        print("- password        : \(model.recievedPassword)")
+        print("- keyboard showed : \(model.isKeyboardShowed)")
+
+        print("- control hidden  : \(model.isControlHidden)")
+
+        print("- input enabled   : \(model.isTextFieldAccessible)")
+
+        print("- now animating   : \(model.isAnimating)")
+        print("- darkmode on     : \(model.isDarkMode)\n")
+    }
         
-    private func performViewUpdates() {        
+    private func performViewUpdates() {
         model.isDarkMode ? viewDelegate?.turnDarkMode() : viewDelegate?.turnLightMode()
         model.isAnimating ? viewDelegate?.startAnimation() : viewDelegate?.endAnimation()
         
@@ -62,6 +82,8 @@ final class BasePresenter: BasePresenterProtocol, BruteForce {
         }
         
         if model.state == .stopped {
+            bruteForceDelegate?.resetRunning()
+            
             viewDelegate?.hideControls()
             viewDelegate?.unlockTextfield()
             viewDelegate?.updateButton(with: Constants.Messages.Status.startNewProcess)
@@ -72,9 +94,11 @@ final class BasePresenter: BasePresenterProtocol, BruteForce {
             if model.state == .paused {
                 image = "play.circle"
                 status = Constants.Messages.Status.paused
+                bruteForceDelegate?.pauseRunning()
             } else {
                 image = "pause.circle"
                 status = Constants.Messages.Status.working
+                bruteForceDelegate?.startRunning()
             }
             
             viewDelegate?.updateButton(with: status)
@@ -91,7 +115,9 @@ final class BasePresenter: BasePresenterProtocol, BruteForce {
     }
     
     func tappedOverTextfield() {
-        model.isKeyboardShowed = false
+        if model.isKeyboardShowed == true {
+            model.isKeyboardShowed = false
+        }
     }
    
     func textFieldReturn(with text: String?) {

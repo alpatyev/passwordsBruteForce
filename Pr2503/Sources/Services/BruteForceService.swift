@@ -4,64 +4,90 @@ import Foundation
 
 protocol BruteForceProtocol {
     var delegate: BruteForce? { get set }
-    var console: String { get set }
+    
+    func startRunning()
+    func pauseRunning()
+    func resetRunning()
 }
 
 // MARK: - Brute force class
 
 final class BruteForceService: BruteForceProtocol {
+   
+    // MARK: - Main values
     
+    private var expectedPassword = "qos"
+    private var generatedPassword = ""
+    private let allowedSymbols: [String] = String().printable.map { String($0) }
+    private var isRunning = false
+  
     // MARK: - Delegate
     
     var delegate: BruteForce?
     
-    var console = "log:\nsome password"
+    // MARK: - Input methods
+    
+    func startRunning() {
+        isRunning = true
+        DispatchQueue.global(qos: .utility).async {
+            self.startshit()
+        }
+    }
+    
+    func pauseRunning() {
+        isRunning = false
+    }
+        
+    func resetRunning() {
+        isRunning = false
+    }
+
+    
+    // MARK: - Output methods
+    
+    
+    // MARK: - Legacy logic below ~
+    
+    func startshit() {
+        var counter = 0
+        while isRunning && (generatedPassword.count < expectedPassword.count + 1) {
+            counter += 1
+            generatedPassword = generateBruteForce(generatedPassword, fromArray: allowedSymbols)
+            if generatedPassword == expectedPassword {
+                break
+            }
+            if counter == 100 {
+                counter = 0
+                delegate?.shareLog(with: generatedPassword)
+            }
+        }
+        print("SUCESSS!")
+    }
     
     func indexOf(character: Character, _ array: [String]) -> Int {
         return array.firstIndex(of: String(character))!
     }
+
 
     func characterAt(index: Int, _ array: [String]) -> Character {
         return index < array.count ? Character(array[index]) : Character("")
     }
 
     func generateBruteForce(_ string: String, fromArray array: [String]) -> String {
-        var str: String = string
+        var password: String = string
 
-        if str.count <= 0 {
-            str.append(characterAt(index: 0, array))
+        if password.count <= 0 {
+            password.append(characterAt(index: 0, array))
         }
         else {
-            str = replace(in: str, at: str.count - 1,
-                        with: characterAt(index: (indexOf(character: str.last!, array) + 1) % array.count, array))
+            password.replace(at: password.count - 1,
+                        with: characterAt(index: (indexOf(character: password.last!, array) + 1) % array.count, array))
 
-            if indexOf(character: str.last!, array) == 0 {
-                str = String(generateBruteForce(String(str.dropLast()), fromArray: array)) + String(str.last!)
+            if indexOf(character: password.last!, array) == 0 {
+                password = String(generateBruteForce(String(password.dropLast()), fromArray: array)) + String(password.last!)
             }
         }
-
-        return str
+        return password
     }
-    
-    func bruteForce(passwordToUnlock: String) {
-        let ALLOWED_CHARACTERS:   [String] = String().printable.map { String($0) }
-
-        var password: String = ""
-
-        // Will strangely ends at 0000 instead of ~~~
-        while password != passwordToUnlock { // Increase MAXIMUM_PASSWORD_SIZE value for more
-            password = generateBruteForce(password, fromArray: ALLOWED_CHARACTERS)
-//             Your stuff here
-            print(password)
-            // Your stuff here
-        }
-        
-        print(password)
-    }
-    
-    func replace(in string: String, at index: Int, with character: Character) -> String {
-        var stringArray = Array(string)
-        stringArray[index] = character
-        return String(stringArray)
-    }
+   
 }
