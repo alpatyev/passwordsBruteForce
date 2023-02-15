@@ -267,7 +267,7 @@ final class BaseViewController: UIViewController, BaseViewProtocol {
     }
     
     func showAlert(with text: String) {
-        let alert = UIAlertController(title: "Warning!",
+        let alert = UIAlertController(title: nil,
                                       message: text,
                                       preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "OK",

@@ -66,7 +66,7 @@ final class BruteForceService: BruteForceProtocol {
                     counter += 1
                 }
                 
-                pointer.generated = pointer.generateBruteForce(pointer.generated, fromArray: pointer.allowedSymbols)
+                pointer.generated = pointer.generateBruteForce(pointer.generated)
             }
         }
     }
@@ -80,7 +80,7 @@ final class BruteForceService: BruteForceProtocol {
     // MARK: - Input methods
     
     func run(with new: String) {
-        print("* SERVICE   : RUNNING")
+        print("* SERVICE   : RUNNING\n")
 
         if generated == "" {
             generated = String(repeating: "0", count: new.count)
@@ -95,11 +95,11 @@ final class BruteForceService: BruteForceProtocol {
     
     func pause() {
         running = false
-        print("* SERVICE   : PAUSED")
+        print("* SERVICE   : PAUSED\n")
     }
     
     func reset() {
-        print("* SERVICE   : RESET")
+        print("* SERVICE   : RESET\n")
 
         running = false
         generated = ""
@@ -108,26 +108,26 @@ final class BruteForceService: BruteForceProtocol {
             
     // MARK: - Legacy logic below ~
     
-    func indexOf(character: Character, _ array: [String]) -> Int {
-        return array.firstIndex(of: String(character))!
+    func indexOf(character: Character) -> Int {
+        return allowedSymbols.firstIndex(of: String(character))!
     }
 
-    func characterAt(index: Int, _ array: [String]) -> Character {
-        return index < array.count ? Character(array[index]) : Character("")
+    func characterAt(index: Int) -> Character {
+        return index < allowedSymbols.count ? Character(allowedSymbols[index]) : Character("")
     }
 
-    func generateBruteForce(_ string: String, fromArray array: [String]) -> String {
+    func generateBruteForce(_ string: String) -> String {
         var password: String = string
 
         if password.count <= 0 {
-            password.append(characterAt(index: 0, array))
+            password.append(characterAt(index: 0))
         }
         else {
             password.replace(at: password.count - 1,
-                        with: characterAt(index: (indexOf(character: password.last!, array) + 1) % array.count, array))
+                             with: characterAt(index: (indexOf(character: password.last!) + 1) % allowedSymbols.count))
 
-            if indexOf(character: password.last!, array) == 0 {
-                password = String(generateBruteForce(String(password.dropLast()), fromArray: array)) + String(password.last!)
+            if indexOf(character: password.last!) == 0 {
+                password = String(generateBruteForce(String(password.dropLast())) + String(password.last!))
             }
         }
         return password
