@@ -10,7 +10,6 @@ extension String {
     var letters: String { return lowercase + uppercase }
     var printable: String { return digits + letters + punctuation }
     
-    
     mutating func replace(at index: Int, with character: Character) {
         var stringArray = Array(self)
         stringArray[index] = character
@@ -28,4 +27,3 @@ extension UIView {
         self.layer.cornerRadius = Constants.Layout.cornerRadius
     }
 }
-

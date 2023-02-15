@@ -20,10 +20,10 @@ final class BruteForceService: BruteForceProtocol {
    
     // MARK: - Main values
     
-    private var running = false
-    private var generatedPassword = ""
-    private var expectedPassword = ""
     private let allowedSymbols: [String] = String().printable.map { String($0) }
+    private var running = false
+    private var generated = ""
+    private var key = ""
     
     // MARK: - GCD implementation
     
@@ -35,50 +35,59 @@ final class BruteForceService: BruteForceProtocol {
             var log = String()
             
             while pointer.running {
-                if pointer.generatedPassword == pointer.expectedPassword {
-                    DispatchQueue.main.async {
-                        log = "\n\(pointer.generatedPassword)" + log
+                if pointer.generated == pointer.key {
+                    pointer.backToMainThread {
+                        log = "\n\(pointer.generated)" + log
                         if log.count > 60 {
                             pointer.delegate?.console(share: log)
                         }
-                        pointer.delegate?.finished(with: pointer.generatedPassword)
+                        pointer.delegate?.finished(with: pointer.generated)
                     }
+                    
                     break
                 }
                 
                 if counter % 50 == 0 {
-                    log = "\n\(pointer.generatedPassword)" + log
+                    log = "\n\(pointer.generated)" + log
                 }
                 
                 if counter == 1000 {
                     let copy = log
-                    DispatchQueue.main.async {
+                    
+                    pointer.backToMainThread {
                         if copy.count > 60 {
                             pointer.delegate?.console(share: copy)
                         }
                         counter = 0
                     }
+                    
                     log.removeAll()
                 } else {
                     counter += 1
                 }
                 
-                pointer.generatedPassword = pointer.generateBruteForce(pointer.generatedPassword, fromArray: pointer.allowedSymbols)
+                pointer.generated = pointer.generateBruteForce(pointer.generated, fromArray: pointer.allowedSymbols)
             }
         }
-        
     }
-
+    
+    private func backToMainThread(_ completion: @escaping () -> Void) {
+        DispatchQueue.main.async {
+            completion()
+        }
+    }
+    
     // MARK: - Input methods
     
     func run(with new: String) {
-        if generatedPassword == "" {
-            generatedPassword = String(repeating: "0", count: new.count)
+        print("* SERVICE   : RUNNING")
+
+        if generated == "" {
+            generated = String(repeating: "0", count: new.count)
         }
         
-        print("* SERVICE   : RUNNING")
         running = true
-        expectedPassword = new
+        key = new
         executeGenerating()
         
         
@@ -87,14 +96,14 @@ final class BruteForceService: BruteForceProtocol {
     func pause() {
         running = false
         print("* SERVICE   : PAUSED")
-
     }
     
     func reset() {
-        running = false
         print("* SERVICE   : RESET")
-        generatedPassword = ""
-        expectedPassword = ""
+
+        running = false
+        generated = ""
+        key = ""
     }
             
     // MARK: - Legacy logic below ~

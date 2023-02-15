@@ -51,8 +51,8 @@ final class BasePresenter: BasePresenterProtocol, BruteForce {
         
         performInterfaceUpdates(compare: .paused)
     }
-    
-    // delete after configuring
+        
+    // MARK: - Private methods - update view with model, or just update view
     
     private func modelConsoleLog() {
         print("* MODEL STATE     : \(model.state)")
@@ -66,11 +66,10 @@ final class BasePresenter: BasePresenterProtocol, BruteForce {
         print("- now animating   : \(model.isAnimating)")
         print("- darkmode on     : \(model.isDarkMode)\n")
     }
-        
-    // MARK: - Private methods - update view with model, or just update view
     
     private func performInterfaceUpdates(compare oldState: BaseModel.Stage) {
-        //modelConsoleLog()
+        modelConsoleLog()
+        
         performAppearance()
         
         if oldState != model.state {
