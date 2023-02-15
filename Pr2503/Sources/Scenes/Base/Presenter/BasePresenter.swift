@@ -17,16 +17,17 @@ protocol BasePresenterProtocol: AnyObject {
     func processControlButton(with textField: String?)
 }
 
-// MARK: - Presenter-service protocol
+// MARK: - Presenter-service protocol output
 
 protocol BruteForce {
-   
+    func console(share log: String)
+    func finished(with password: String)
 }
 
 // MARK: - Presenter class
 
 final class BasePresenter: BasePresenterProtocol, BruteForce {
-
+    
     // MARK: - Model
     
     private var model = BaseModel() {
@@ -54,7 +55,7 @@ final class BasePresenter: BasePresenterProtocol, BruteForce {
     // delete after configuring
     
     private func modelConsoleLog() {
-        print("> UPDATED STATE   : \(model.state)")
+        print("* MODEL STATE     : \(model.state)")
         print("- password        : \(model.recievedPassword)")
         print("- keyboard showed : \(model.isKeyboardShowed)")
 
@@ -69,8 +70,7 @@ final class BasePresenter: BasePresenterProtocol, BruteForce {
     // MARK: - Private methods - update view with model, or just update view
     
     private func performInterfaceUpdates(compare oldState: BaseModel.Stage) {
-        modelConsoleLog()
-        
+        //modelConsoleLog()
         performAppearance()
         
         if oldState != model.state {
@@ -86,6 +86,7 @@ final class BasePresenter: BasePresenterProtocol, BruteForce {
     }
     
     private func performAppearance() {
+        viewDelegate?.hidePassword()
         model.isDarkMode ? viewDelegate?.turnDarkMode() : viewDelegate?.turnLightMode()
     }
     
@@ -102,6 +103,8 @@ final class BasePresenter: BasePresenterProtocol, BruteForce {
         viewDelegate?.unlockTextfield()
         viewDelegate?.hideControls()
         viewDelegate?.endAnimation()
+        
+        bruteForceDelegate?.reset()
     }
     
     private func performRunningState() {
@@ -109,7 +112,10 @@ final class BasePresenter: BasePresenterProtocol, BruteForce {
         viewDelegate?.controlsImage(named: "pause.circle")
         viewDelegate?.showControls()
         viewDelegate?.startAnimation()
+        viewDelegate?.hideKeyboard()
         viewDelegate?.lockTextField()
+        
+        bruteForceDelegate?.run(with: model.recievedPassword)
     }
     
     private func performPausedState() {
@@ -118,12 +124,26 @@ final class BasePresenter: BasePresenterProtocol, BruteForce {
         viewDelegate?.showControls()
         viewDelegate?.endAnimation()
         viewDelegate?.lockTextField()
+        
+        bruteForceDelegate?.pause()
     }
     
     private func presentAlert(_ message: String) {
         viewDelegate?.showAlert(with: message)
     }
     
+    // MARK: - Service send events
+    
+    func console(share log: String) {
+        viewDelegate?.updateConsole(with: log)
+    }
+    
+    func finished(with password: String) {
+        print("* PRESENTER : RECIEVED (service response) -> [\(model.recievedPassword)]")
+        model.state = .stopped
+        viewDelegate?.showPassword()
+        presentAlert(Constants.Messages.Alerts.success)
+    }
  
     // MARK: - View send events
     
@@ -141,7 +161,7 @@ final class BasePresenter: BasePresenterProtocol, BruteForce {
    
     func textFieldReturn(with text: String?) {
         guard let password = text, text != "" else {
-            presentAlert(Constants.Messages.Errors.emptyPasswordError)
+            presentAlert(Constants.Messages.Alerts.emptyPasswordError)
             return
         }
         model.recievedPassword = password
@@ -154,7 +174,7 @@ final class BasePresenter: BasePresenterProtocol, BruteForce {
             model.recievedPassword = newPassword
         } else {
             viewDelegate?.correctTextField(with: model.recievedPassword)
-            presentAlert(Constants.Messages.Errors.reachedSymbolsLimit)
+            presentAlert(Constants.Messages.Alerts.reachedSymbolsLimit)
         }
     }
         
@@ -172,7 +192,7 @@ final class BasePresenter: BasePresenterProtocol, BruteForce {
     
     func processControlButton(with textField: String?) {
         guard textField != nil, textField != "" else {
-            presentAlert(Constants.Messages.Errors.emptyPasswordError)
+            presentAlert(Constants.Messages.Alerts.emptyPasswordError)
             return
         }
         
