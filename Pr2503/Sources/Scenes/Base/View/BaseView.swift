@@ -27,6 +27,7 @@ protocol BaseViewProtocol: UIViewController {
     func lockTextField()
     func unlockTextfield()
     func correctTextField(with text: String)
+    func checkEmptyTextField() -> Bool
 }
 
 // MARK: - View class
@@ -292,6 +293,10 @@ final class BaseViewController: UIViewController, BaseViewProtocol {
     
     func correctTextField(with text: String) {
         passwordTextField.text = text
+    }
+    
+    func checkEmptyTextField() -> Bool {
+        passwordTextField.text == nil ? true : false
     }
     
     // MARK: - View events

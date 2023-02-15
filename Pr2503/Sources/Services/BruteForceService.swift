@@ -7,7 +7,7 @@ protocol BruteForceProtocol {
     
     func startRunning()
     func pauseRunning()
-    func resetRunning()
+    func resetRunning(with new: String)
 }
 
 // MARK: - Brute force class
@@ -16,7 +16,7 @@ final class BruteForceService: BruteForceProtocol {
    
     // MARK: - Main values
     
-    private var expectedPassword = "qos"
+    private var expectedPassword = ""
     private var generatedPassword = ""
     private let allowedSymbols: [String] = String().printable.map { String($0) }
     private var isRunning = false
@@ -29,8 +29,10 @@ final class BruteForceService: BruteForceProtocol {
     
     func startRunning() {
         isRunning = true
-        DispatchQueue.global(qos: .utility).async {
-            self.startshit()
+        if !expectedPassword.isEmpty {
+            DispatchQueue.global(qos: .utility).async {
+                self.startCracking()
+            }
         }
     }
     
@@ -38,22 +40,45 @@ final class BruteForceService: BruteForceProtocol {
         isRunning = false
     }
         
-    func resetRunning() {
-        isRunning = false
+    func resetRunning(with new: String) {
+        pauseRunning()
+        
+        guard new != "" else {
+            return
+        }
+        expectedPassword = new
+        
+        if new.count == 0 {
+            print("EMPTY PASSWORD")
+            delegate?.emptyPassword()
+            generatedPassword = expectedPassword
+        } else {
+            generatedPassword = String(repeating: allowedSymbols.first ?? "0",
+                                       count: new.count)
+        }
+        print("UPDATED: '\(generatedPassword)' : '\(expectedPassword)'")
+        
     }
-
-    
-    // MARK: - Output methods
-    
     
     // MARK: - Legacy logic below ~
     
-    func startshit() {
+    func startCracking() {
         var counter = 0
-        while isRunning && (generatedPassword.count < expectedPassword.count + 1) {
+        print("push to start", isRunning)
+        
+        if generatedPassword == expectedPassword {
+            delegate?.successfullyCracked(with: generatedPassword)
+            generatedPassword = ""
+            expectedPassword = ""
+        }
+        
+        while isRunning {
             counter += 1
             generatedPassword = generateBruteForce(generatedPassword, fromArray: allowedSymbols)
             if generatedPassword == expectedPassword {
+                delegate?.successfullyCracked(with: generatedPassword)
+                generatedPassword = ""
+                expectedPassword = ""
                 break
             }
             if counter == 100 {
@@ -61,13 +86,13 @@ final class BruteForceService: BruteForceProtocol {
                 delegate?.shareLog(with: generatedPassword)
             }
         }
-        print("SUCESSS!")
+        generatedPassword = ""
+        expectedPassword = ""
     }
     
     func indexOf(character: Character, _ array: [String]) -> Int {
         return array.firstIndex(of: String(character))!
     }
-
 
     func characterAt(index: Int, _ array: [String]) -> Character {
         return index < array.count ? Character(array[index]) : Character("")
@@ -89,5 +114,4 @@ final class BruteForceService: BruteForceProtocol {
         }
         return password
     }
-   
 }

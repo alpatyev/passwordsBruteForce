@@ -9,7 +9,8 @@ struct BaseModel {
     }
     
     var state: Stage = .stopped
-    var recievedPassword = ""
+    var recievedPassword = String()
+    
     var isDarkMode = true
     var isKeyboardShowed = false
     

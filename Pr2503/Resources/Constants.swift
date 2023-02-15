@@ -23,6 +23,10 @@ enum Constants {
             static let paused = "PAUSED"
         }
         
+        enum Console {
+            static let empty = "//console log"
+        }
+        
         enum Errors {
             static let reachedSymbolsLimit = "Password length cannot be more than 10 symbols."
         }

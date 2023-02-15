@@ -20,18 +20,14 @@ protocol BasePresenterProtocol: AnyObject {
 
 protocol BruteForce {
     func shareLog(with text: String)
+    func successfullyCracked(with lastConsoleText: String)
+    func emptyPassword()
 }
 
 // MARK: - Presenter class
 
 final class BasePresenter: BasePresenterProtocol, BruteForce {
-    func shareLog(with text: String) {
-        DispatchQueue.main.async {
-            self.viewDelegate?.updateConsole(with: text)
-        }
-    }
-    
-    
+
     // MARK: - Model
     
     private var model = BaseModel() {
@@ -44,10 +40,6 @@ final class BasePresenter: BasePresenterProtocol, BruteForce {
     
     weak var viewDelegate: BaseViewProtocol?
     private var bruteForceDelegate: BruteForceProtocol?
-    
-    
-    // MARK: - View
-    
     
     // MARK: - Configure with view
     
@@ -74,6 +66,8 @@ final class BasePresenter: BasePresenterProtocol, BruteForce {
     }
         
     private func performViewUpdates() {
+        modelConsoleLog()
+        viewDelegate?.hidePassword()
         model.isDarkMode ? viewDelegate?.turnDarkMode() : viewDelegate?.turnLightMode()
         model.isAnimating ? viewDelegate?.startAnimation() : viewDelegate?.endAnimation()
         
@@ -82,7 +76,7 @@ final class BasePresenter: BasePresenterProtocol, BruteForce {
         }
         
         if model.state == .stopped {
-            bruteForceDelegate?.resetRunning()
+            bruteForceDelegate?.resetRunning(with: model.recievedPassword)
             
             viewDelegate?.hideControls()
             viewDelegate?.unlockTextfield()
@@ -99,6 +93,7 @@ final class BasePresenter: BasePresenterProtocol, BruteForce {
                 image = "pause.circle"
                 status = Constants.Messages.Status.working
                 bruteForceDelegate?.startRunning()
+                print("started")
             }
             
             viewDelegate?.updateButton(with: status)
@@ -106,6 +101,32 @@ final class BasePresenter: BasePresenterProtocol, BruteForce {
             viewDelegate?.showControls()
             viewDelegate?.lockTextField()
         }
+    }
+    
+    // MARK: - Private methods
+    
+    func updateConsoleFromBackground(with text: String)  {
+        DispatchQueue.main.async {
+            self.viewDelegate?.updateConsole(with: text)
+        }
+    }
+    
+    
+    // MARK: - Brute force service
+    
+    func shareLog(with text: String) {
+        updateConsoleFromBackground(with: text)
+    }
+    
+    func successfullyCracked(with lastConsoleText: String) {
+        DispatchQueue.main.async {
+            self.model.state = .stopped
+            self.viewDelegate?.showPassword()
+        }
+        updateConsoleFromBackground(with: lastConsoleText)
+    }
+    func emptyPassword() {
+        viewDelegate?.updateConsole(with: Constants.Messages.Console.empty)
     }
  
     // MARK: - View send events
@@ -151,6 +172,8 @@ final class BasePresenter: BasePresenterProtocol, BruteForce {
     }
     
     func processControlButton() {
+        bruteForceDelegate?.resetRunning(with: model.recievedPassword)
+
         switch model.state {
             case .stopped:
                 model.state = .running
