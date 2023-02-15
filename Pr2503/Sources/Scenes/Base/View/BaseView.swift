@@ -316,7 +316,7 @@ final class BaseViewController: UIViewController, BaseViewProtocol {
     }
     
     @objc private func processControlTapped() {
-        presenter?.processControlButton()
+        presenter?.processControlButton(with: passwordTextField.text)
     }
 }
 

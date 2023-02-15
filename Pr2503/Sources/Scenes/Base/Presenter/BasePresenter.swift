@@ -1,4 +1,5 @@
 import Foundation
+import FileProvider
 
 // MARK: - Presenter-view protocol
 
@@ -13,15 +14,13 @@ protocol BasePresenterProtocol: AnyObject {
     
     func dayNightButton()
     func startPauseButton()
-    func processControlButton()
+    func processControlButton(with textField: String?)
 }
 
 // MARK: - Presenter-service protocol
 
 protocol BruteForce {
-    func shareLog(with text: String)
-    func successfullyCracked(with lastConsoleText: String)
-    func emptyPassword()
+   
 }
 
 // MARK: - Presenter class
@@ -32,7 +31,8 @@ final class BasePresenter: BasePresenterProtocol, BruteForce {
     
     private var model = BaseModel() {
         didSet {
-            performViewUpdates()
+            performKeyboardUpdates(compare: oldValue.isKeyboardShowed)
+            performInterfaceUpdates(compare: oldValue.state)
         }
     }
     
@@ -43,14 +43,15 @@ final class BasePresenter: BasePresenterProtocol, BruteForce {
     
     // MARK: - Configure with view
     
-    public func configure(with view: BaseViewProtocol?, service: BruteForceProtocol) {
+    public func configure(with view: BaseViewProtocol?, service: BruteForceProtocol?) {
         viewDelegate = view
         bruteForceDelegate = service
         bruteForceDelegate?.delegate = self
-        performViewUpdates()
+        
+        performInterfaceUpdates(compare: .paused)
     }
     
-    // MARK: - Called when model has been updated
+    // delete after configuring
     
     private func modelConsoleLog() {
         print("> UPDATED STATE   : \(model.state)")
@@ -65,74 +66,71 @@ final class BasePresenter: BasePresenterProtocol, BruteForce {
         print("- darkmode on     : \(model.isDarkMode)\n")
     }
         
-    private func performViewUpdates() {
+    // MARK: - Private methods - update view with model, or just update view
+    
+    private func performInterfaceUpdates(compare oldState: BaseModel.Stage) {
         modelConsoleLog()
-        viewDelegate?.hidePassword()
-        model.isDarkMode ? viewDelegate?.turnDarkMode() : viewDelegate?.turnLightMode()
-        model.isAnimating ? viewDelegate?.startAnimation() : viewDelegate?.endAnimation()
         
-        if !model.isKeyboardShowed {
-            viewDelegate?.hideKeyboard()
-        }
+        performAppearance()
         
-        if model.state == .stopped {
-            bruteForceDelegate?.resetRunning(with: model.recievedPassword)
-            
-            viewDelegate?.hideControls()
-            viewDelegate?.unlockTextfield()
-            viewDelegate?.updateButton(with: Constants.Messages.Status.startNewProcess)
-        } else {
-            var image = String()
-            var status = String()
-            
-            if model.state == .paused {
-                image = "play.circle"
-                status = Constants.Messages.Status.paused
-                bruteForceDelegate?.pauseRunning()
-            } else {
-                image = "pause.circle"
-                status = Constants.Messages.Status.working
-                bruteForceDelegate?.startRunning()
-                print("started")
+        if oldState != model.state {
+            switch model.state {
+                case .stopped:
+                    performStoppedState()
+                case .running:
+                    performRunningState()
+                case .paused:
+                    performPausedState()
             }
-            
-            viewDelegate?.updateButton(with: status)
-            viewDelegate?.controlsImage(named: image)
-            viewDelegate?.showControls()
-            viewDelegate?.lockTextField()
         }
     }
     
-    // MARK: - Private methods
+    private func performAppearance() {
+        model.isDarkMode ? viewDelegate?.turnDarkMode() : viewDelegate?.turnLightMode()
+    }
     
-    func updateConsoleFromBackground(with text: String)  {
-        DispatchQueue.main.async {
-            self.viewDelegate?.updateConsole(with: text)
+    private func performKeyboardUpdates(compare oldValue: Bool) {
+        if oldValue != model.isKeyboardShowed {
+            if !model.isKeyboardShowed {
+                viewDelegate?.hideKeyboard()
+            }
         }
     }
-    
-    
-    // MARK: - Brute force service
-    
-    func shareLog(with text: String) {
-        updateConsoleFromBackground(with: text)
+        
+    private func performStoppedState() {
+        viewDelegate?.updateButton(with: Constants.Messages.Status.startNewProcess)
+        viewDelegate?.unlockTextfield()
+        viewDelegate?.hideControls()
+        viewDelegate?.endAnimation()
     }
     
-    func successfullyCracked(with lastConsoleText: String) {
-        DispatchQueue.main.async {
-            self.model.state = .stopped
-            self.viewDelegate?.showPassword()
-        }
-        updateConsoleFromBackground(with: lastConsoleText)
+    private func performRunningState() {
+        viewDelegate?.updateButton(with: Constants.Messages.Status.working)
+        viewDelegate?.controlsImage(named: "pause.circle")
+        viewDelegate?.showControls()
+        viewDelegate?.startAnimation()
+        viewDelegate?.lockTextField()
     }
-    func emptyPassword() {
-        viewDelegate?.updateConsole(with: Constants.Messages.Console.empty)
+    
+    private func performPausedState() {
+        viewDelegate?.updateButton(with: Constants.Messages.Status.paused)
+        viewDelegate?.controlsImage(named: "play.circle")
+        viewDelegate?.showControls()
+        viewDelegate?.endAnimation()
+        viewDelegate?.lockTextField()
     }
+    
+    private func presentAlert(_ message: String) {
+        viewDelegate?.showAlert(with: message)
+    }
+    
  
     // MARK: - View send events
     
     func keyboardShowed(_ onScreen: Bool) {
-        model.isKeyboardShowed = onScreen
+        if model.isKeyboardShowed != onScreen {
+            model.isKeyboardShowed = onScreen
+        }
     }
     
     func tappedOverTextfield() {
@@ -142,7 +140,8 @@ final class BasePresenter: BasePresenterProtocol, BruteForce {
     }
    
     func textFieldReturn(with text: String?) {
-        guard let password = text else {
+        guard let password = text, text != "" else {
+            presentAlert(Constants.Messages.Errors.emptyPasswordError)
             return
         }
         model.recievedPassword = password
@@ -155,7 +154,7 @@ final class BasePresenter: BasePresenterProtocol, BruteForce {
             model.recievedPassword = newPassword
         } else {
             viewDelegate?.correctTextField(with: model.recievedPassword)
-            viewDelegate?.showAlert(with: Constants.Messages.Errors.reachedSymbolsLimit)
+            presentAlert(Constants.Messages.Errors.reachedSymbolsLimit)
         }
     }
         
@@ -171,9 +170,12 @@ final class BasePresenter: BasePresenterProtocol, BruteForce {
         }
     }
     
-    func processControlButton() {
-        bruteForceDelegate?.resetRunning(with: model.recievedPassword)
-
+    func processControlButton(with textField: String?) {
+        guard textField != nil, textField != "" else {
+            presentAlert(Constants.Messages.Errors.emptyPasswordError)
+            return
+        }
+        
         switch model.state {
             case .stopped:
                 model.state = .running

@@ -29,6 +29,7 @@ enum Constants {
         
         enum Errors {
             static let reachedSymbolsLimit = "Password length cannot be more than 10 symbols."
+            static let emptyPasswordError = "Password cannot be empty. You have to create password with length from 1 up to 10 symbols."
         }
     }
 }
