@@ -2,8 +2,9 @@
 Unusual homework from MobDevFactory. Here, password guessing on the background thread, provided that the UI does not freeze.
 
 Here are a couple of screenshots:
-![guessed](https://user-images.githubusercontent.com/118742566/219163873-2d36a730-4e74-4925-99a1-f0ee8c48e539.png)
-![guessing](https://user-images.githubusercontent.com/118742566/219163964-4151d9ed-2259-499f-8bdc-229c9ed19987.png)
+
+<p style="text-align: center;"><img src="https://user-images.githubusercontent.com/118742566/219163964-4151d9ed-2259-499f-8bdc-229c9ed19987.png" width="300" /><img src="https://user-images.githubusercontent.com/118742566/219163873-2d36a730-4e74-4925-99a1-f0ee8c48e539.png" width="300" /></p>
+
 
 Details:
 1. Made according to the MVP design pattern. With builder for individual scene.
