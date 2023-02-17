@@ -15,6 +15,8 @@ protocol BasePresenterProtocol: AnyObject {
     func dayNightButton()
     func startPauseButton()
     func processControlButton(with textField: String?)
+    
+    func viewWillDisappear()
 }
 
 // MARK: - Presenter-service protocol output
@@ -41,8 +43,14 @@ final class BasePresenter: BasePresenterProtocol, BruteForce {
     
     weak var viewDelegate: BaseViewProtocol?
     private var bruteForceDelegate: BruteForceProtocol?
+    private var userDataManager: UserDataServiceProtocol?
     
-    // MARK: - Configure with view
+    // MARK: - Configuration
+    
+    public func configure(with service: UserDataServiceProtocol) {
+        model = service.getData()
+        userDataManager = service
+    }
     
     public func configure(with view: BaseViewProtocol?, service: BruteForceProtocol?) {
         viewDelegate = view
@@ -81,6 +89,10 @@ final class BasePresenter: BasePresenterProtocol, BruteForce {
                 case .paused:
                     performPausedState()
             }
+        }
+        
+        if model.state == .stopped {
+            bruteForceDelegate?.reset()
         }
     }
     
@@ -131,7 +143,7 @@ final class BasePresenter: BasePresenterProtocol, BruteForce {
         viewDelegate?.showAlert(with: message)
     }
     
-    // MARK: - Service send events
+    // MARK: - Services send events
     
     func console(share log: String) {
         viewDelegate?.updateConsole(with: log)
@@ -145,6 +157,10 @@ final class BasePresenter: BasePresenterProtocol, BruteForce {
     }
  
     // MARK: - View send events
+    
+    func viewWillDisappear() {
+        userDataManager?.updateData(with: model)
+    }
     
     func keyboardShowed(_ onScreen: Bool) {
         if model.isKeyboardShowed != onScreen {

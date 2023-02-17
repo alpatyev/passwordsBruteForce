@@ -18,6 +18,7 @@
 		64108268299A6B1500F20DAC /* SceneBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64108267299A6B1500F20DAC /* SceneBuilder.swift */; };
 		6410826B299A93AE00F20DAC /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6410826A299A93AE00F20DAC /* Constants.swift */; };
 		6410826E299A9A3900F20DAC /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6410826D299A9A3900F20DAC /* Extensions.swift */; };
+		6440B71F299ECA0D007918FB /* UserDataService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6440B71E299ECA0C007918FB /* UserDataService.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -34,6 +35,7 @@
 		64108267299A6B1500F20DAC /* SceneBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneBuilder.swift; sourceTree = "<group>"; };
 		6410826A299A93AE00F20DAC /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		6410826D299A9A3900F20DAC /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
+		6440B71E299ECA0C007918FB /* UserDataService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDataService.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -108,6 +110,7 @@
 			isa = PBXGroup;
 			children = (
 				64108261299A69D800F20DAC /* BruteForceService.swift */,
+				6440B71E299ECA0C007918FB /* UserDataService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -237,6 +240,7 @@
 				64108264299A6A2B00F20DAC /* BasePresenter.swift in Sources */,
 				64108268299A6B1500F20DAC /* SceneBuilder.swift in Sources */,
 				264DFEE2260D07EF0035EA15 /* BaseView.swift in Sources */,
+				6440B71F299ECA0D007918FB /* UserDataService.swift in Sources */,
 				264DFEDE260D07EF0035EA15 /* AppDelegate.swift in Sources */,
 				264DFEE0260D07EF0035EA15 /* SceneDelegate.swift in Sources */,
 				6410826B299A93AE00F20DAC /* Constants.swift in Sources */,
