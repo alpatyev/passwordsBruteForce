@@ -1,6 +1,5 @@
 
 # passwordsBruteForce
-Unusual homework from MobDevFactory. Here, password guessing on the background thread, provided that the UI does not freeze.
 
 Here are a couple of screenshots:
 
